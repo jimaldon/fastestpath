@@ -7,27 +7,10 @@
 #include <stdio.h>
 #include <utility>
 #include <vector>
-#include "astar.h"
 
-// Bits used in the overrides image bytes
-enum OverrideFlags
-{
-    OF_RIVER_MARSH = 0x10,
-    OF_INLAND = 0x20,
-    OF_WATER_BASIN = 0x40
-};
+#include "utility.hpp"
 
-// Some constants
-enum {
-    IMAGE_DIM = 2048, // Width and height of the elevation and overrides image
-    
-    ROVER_X = 159,
-    ROVER_Y = 1520,
-    BACHELOR_X = 1303,
-    BACHELOR_Y = 85,
-    WEDDING_X = 1577,
-    WEDDING_Y = 1294
-};
+
 
 std::ifstream::pos_type fileSize(const char* filename)
 {
@@ -73,37 +56,35 @@ int main(int argc, char** argv)
     auto overrides = loadFile("assets/overrides.data", expectedFileSize);
     std::ofstream of("pic.bmp");
     
-
-    AStar::Generator gen;
-    gen.setWorldSize({2048,2048});
-    gen.setHeuristic(AStar::Heuristic::euclidean);
-    gen.setDiagonalMovement(true);
+    maze m = make_maze(IMAGE_DIM, IMAGE_DIM, overrides, elevation);
     
-    //add water+river marsh
-    auto Obegin = overrides.begin();
-    for(auto i = overrides.begin(); i != overrides.end(); ++i)
-    {
-        AStar::Vec2i point;
-        if(*i & (OF_WATER_BASIN | OF_RIVER_MARSH))
-        {
-            point.y = (i - Obegin)%IMAGE_DIM;
-            point.x = (i - Obegin) - point.y*IMAGE_DIM;
-            gen.addCollision(point);
-        }
+    std::cout << "here! after make maze" << std::endl;
+     
+    vertex_descriptor roverPos = vertex((ROVER_X+ROVER_Y*IMAGE_DIM), m.m_grid);
+    vertex_descriptor humanPos = vertex((BACHELOR_X+BACHELOR_Y*IMAGE_DIM), m.m_grid);
 
-    }
-    std::cout << "here! 0" << std::endl;
-    auto prelimpath1 = gen.findPath({ROVER_X, ROVER_Y},{BACHELOR_X, BACHELOR_Y});
-    auto prelimpath2 = gen.findPath({BACHELOR_X, BACHELOR_Y},{WEDDING_X, WEDDING_Y});
+    std::cout << "here! before solve call" << std::endl;
+
+    if (m.solve(roverPos, humanPos))
+        std::cout << "Solved the maze." << std::endl;
+    else
+        std::cout << "The maze is not solvable." << std::endl;
 
     std::vector<std::pair<size_t, size_t>> path1;
-    path1.reserve(prelimpath1.size());
-
-    for(auto& coord1 : prelimpath1)
+    //path1.reserve(m.m_solution_length);
+    
+    for(const auto& elem: m.m_solution)
     {
-        path1.push_back(std::make_pair(coord1.x, coord1.y));
+        
+        //size_t index = get(boost::vertex_index, m.m_grid, elem);
+        //size_t xCorr = index%IMAGE_DIM;
+        //size_t yCorr = (index-xCorr)/IMAGE_DIM;
+        //std::cout<<"elem[0], elem[1]"<<elem[0]<<", "<<elem[1]<<std::endl;
+        //std::cout<<"xCorr, yCorr"<<xCorr<<", "<<yCorr<<std::endl;
+        path1.push_back(std::make_pair(elem[0], elem[1]));
     }
-    std::cout << "here! 1" << std::endl;
+
+    std::cout << "here! after path1 creation" << std::endl;
     visualizer::writeBMP(
         of,
         &elevation[0],
@@ -117,14 +98,13 @@ int main(int argc, char** argv)
             //    return uint8_t(visualizer::IPV_PATH);
             //}
             // Marks interesting positions on the map
-            std::cout << "here! 2" << std::endl;
             if (donut(x, y, ROVER_X, ROVER_Y) ||
                 donut(x, y, BACHELOR_X, BACHELOR_Y) ||
                 donut(x, y, WEDDING_X, WEDDING_Y) || std::find(path1.begin(), path1.end(), std::make_pair(x,y)) != path1.end())
             {
                 return uint8_t(visualizer::IPV_PATH);
             }
-            std::cout << "here! 3" << std::endl;
+            
             // Signifies water
             if ((overrides[y * IMAGE_DIM + x] & (OF_WATER_BASIN | OF_RIVER_MARSH)) ||
                 elevation == 0)
@@ -139,6 +119,6 @@ int main(int argc, char** argv)
             }
             return elevation;
     });
-    system("edisplay pic.bmp");
+    //system("edisplay pic.bmp");
     return 0;
 }
