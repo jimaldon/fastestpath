@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     else
         std::cout << "The maze is not solvable." << std::endl;
 
-    std::vector<std::pair<size_t, size_t>> path1;
+    std::set<std::pair<size_t, size_t>> path1;
     //path1.reserve(m.m_solution_length);
     
     for(const auto& elem: m.m_solution)
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
         //size_t yCorr = (index-xCorr)/IMAGE_DIM;
         //std::cout<<"elem[0], elem[1]"<<elem[0]<<", "<<elem[1]<<std::endl;
         //std::cout<<"xCorr, yCorr"<<xCorr<<", "<<yCorr<<std::endl;
-        path1.push_back(std::make_pair(elem[0], elem[1]));
+        path1.insert(std::make_pair(elem[0], elem[1]));
     }
 
     std::cout << "here! after path1 creation" << std::endl;
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
             // Marks interesting positions on the map
             if (donut(x, y, ROVER_X, ROVER_Y) ||
                 donut(x, y, BACHELOR_X, BACHELOR_Y) ||
-                donut(x, y, WEDDING_X, WEDDING_Y) || std::find(path1.begin(), path1.end(), std::make_pair(x,y)) != path1.end())
+                donut(x, y, WEDDING_X, WEDDING_Y) || path1.find(std::make_pair(x,y)) != path1.end())
             {
                 return uint8_t(visualizer::IPV_PATH);
             }
