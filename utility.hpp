@@ -1,7 +1,7 @@
 #ifndef UTILITY_CPP
 #define UTILITY_CPP
 
-#include <boost/graph/astar_search.hpp>
+#include "astar_search.h"
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/grid_graph.hpp>
 #include <boost/lexical_cast.hpp>
@@ -13,6 +13,15 @@
 #include <ctime>
 #include <iostream>
 #include "visualizer.h"
+
+
+#include <type_traits>
+#include <typeinfo>
+#include <memory>
+#include <string>
+#include <cstdlib>
+
+const int cwConstant = 5;
 
 enum OverrideFlags
 {
@@ -32,7 +41,6 @@ enum {
     WEDDING_X = 1577,
     WEDDING_Y = 1294
 };
-
 
 
 boost::mt19937 random_generator;
@@ -222,10 +230,55 @@ std::size_t random_int(std::size_t a, std::size_t b) {
   return generate();
 }
 
-//double timeScore(const std::vector<uint8_t>& elevation)
-//{
+double stepTime(const vertex_descriptor& source, const vertex_descriptor& target, const std::vector<uint8_t>& elevation)
+{
+  double stepTime = 0;
+  bool diag = (abs(source[0]-target[0]) == abs(source[1]-target[1])) ? 1 : 0;
+  auto sourceElevation = static_cast<int>(elevation[source[0]+source[1]*IMAGE_DIM]);
+  auto targetElevation = static_cast<int>(elevation[target[0]+target[1]*IMAGE_DIM]);
 
-//}
+  //check for water or flat
+  if(sourceElevation == 0 || targetElevation == 0)
+  {
+    std::cout<< "ERROR! elevation of path is 0";
+    return 0;
+  }
+  
+  //std::cout << "source elevation: " << sourceElevation << std::endl;
+  int delta = targetElevation - sourceElevation;
+
+  if(!diag)
+  {
+    if(delta == 0)
+    {
+      stepTime += 1;
+    }
+    else if(delta > 0 )
+      {
+        stepTime +=  sqrt(1 + 0.003937*pow(delta,2)) + cwConstant*0.0627455*delta;
+      }
+    else
+    { 
+        stepTime += sqrt(1 + 0.003937*pow(delta,2)) - cwConstant*0.0627455*delta;
+    }
+    
+  }
+  else{
+    if(delta == 0)
+    {
+      stepTime += 1.414;
+    }
+    else if(delta > 0 )
+      {
+        stepTime +=  sqrt(2 + 0.003937*pow(delta,2)) + cwConstant*0.0627455*delta;
+      }
+    else
+    { 
+        stepTime += sqrt(2 + 0.003937*pow(delta,2)) - cwConstant*0.0627455*delta;
+    }
+  }
+  return stepTime;
+}
 // Generate a maze with a random assignment of barriers.
 maze make_maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& overrides, const std::vector<uint8_t>& elevation) {
   maze m(IMAGE_DIM, IMAGE_DIM);

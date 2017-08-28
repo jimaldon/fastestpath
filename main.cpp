@@ -73,7 +73,8 @@ int main(int argc, char** argv)
     std::set<std::pair<size_t, size_t>> path1;
     //path1.reserve(m.m_solution_length);
     
-    for(const auto& elem: m.m_solution)
+    double pathTime = 0;
+    for(auto elem = m.m_solution.begin(); elem != m.m_solution.end(); ++elem)
     {
         
         //size_t index = get(boost::vertex_index, m.m_grid, elem);
@@ -81,10 +82,13 @@ int main(int argc, char** argv)
         //size_t yCorr = (index-xCorr)/IMAGE_DIM;
         //std::cout<<"elem[0], elem[1]"<<elem[0]<<", "<<elem[1]<<std::endl;
         //std::cout<<"xCorr, yCorr"<<xCorr<<", "<<yCorr<<std::endl;
-        path1.insert(std::make_pair(elem[0], elem[1]));
+        if(std::next(elem,1) != m.m_solution.end())
+            pathTime += stepTime(*elem, *std::next(elem,1), elevation);
+
+        path1.insert(std::make_pair(elem->at(0), elem->at(1)));
     }
 
-    std::cout << "here! after path1 creation" << std::endl;
+    std::cout << "pathTime " << pathTime << std::endl;
     visualizer::writeBMP(
         of,
         &elevation[0],

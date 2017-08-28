@@ -5,8 +5,7 @@ add_subdirectory(visualizer)
 
 set (CMAKE_CXX_STANDARD 14)
 
-SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/opt/boost/include")
-SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/opt/boost/lib")
+SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ".")
 
 FIND_PACKAGE( Boost 1.65 )
 IF (Boost_FOUND)
