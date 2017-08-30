@@ -280,14 +280,13 @@ bool maze::solve(vertex_descriptor source, vertex_descriptor goal) {
   manhattan_heuristic heuristic(goal);
   astar_goal_visitor visitor(goal);
 
-  std::cout << "here! before try in solve()" << std::endl;
   try {
     astar_search(m_barrier_grid, source, heuristic,
                  boost::weight_map(weight).
                  predecessor_map(pred_pmap).
                  distance_map(dist_pmap).
                  visitor(visitor) );  
-    std::cout << "here! after try in solve()" << std::endl;
+    
   } catch(found_goal fg) {
     // Walk backwards from the goal through the predecessor chain adding
     // vertices to the solution path.

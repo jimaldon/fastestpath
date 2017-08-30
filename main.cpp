@@ -57,38 +57,52 @@ int main(int argc, char** argv)
     std::ofstream of("pic.bmp");
     
     maze m = make_maze(IMAGE_DIM, IMAGE_DIM, overrides, elevation);
-    
-    std::cout << "here! after make maze" << std::endl;
-     
+         
     vertex_descriptor roverPos = vertex((ROVER_X+ROVER_Y*IMAGE_DIM), m.m_grid);
     vertex_descriptor humanPos = vertex((BACHELOR_X+BACHELOR_Y*IMAGE_DIM), m.m_grid);
-
-    std::cout << "here! before solve call" << std::endl;
+    vertex_descriptor weddingPos = vertex((WEDDING_X+WEDDING_Y*IMAGE_DIM), m.m_grid);
 
     if (m.solve(roverPos, humanPos))
-        std::cout << "Solved the maze." << std::endl;
+        std::cout << "Rover has reached the bachelor!" << std::endl;
     else
-        std::cout << "The maze is not solvable." << std::endl;
+        std::cout << "Rover cacn't reach the bachelor." << std::endl;
 
     std::set<std::pair<size_t, size_t>> path1;
-    //path1.reserve(m.m_solution_length);
     
-    double pathTime = 0;
+    double pathTime1 = 0;
     for(auto elem = m.m_solution.begin(); elem != m.m_solution.end(); ++elem)
     {
         
-        //size_t index = get(boost::vertex_index, m.m_grid, elem);
-        //size_t xCorr = index%IMAGE_DIM;
-        //size_t yCorr = (index-xCorr)/IMAGE_DIM;
-        //std::cout<<"elem[0], elem[1]"<<elem[0]<<", "<<elem[1]<<std::endl;
-        //std::cout<<"xCorr, yCorr"<<xCorr<<", "<<yCorr<<std::endl;
         if(std::next(elem,1) != m.m_solution.end())
-            pathTime += stepTime(*elem, *std::next(elem,1), elevation);
+            pathTime1 += stepTime(*elem, *std::next(elem,1), elevation);
 
         path1.insert(std::make_pair(elem->at(0), elem->at(1)));
     }
 
-    std::cout << "pathTime " << pathTime << std::endl;
+    std::cout << "pathTime1: " << pathTime1 << std::endl;
+    m.m_solution.clear();
+
+
+    //Wedding party -> Bachelor to Wedding
+    if (m.solve(humanPos, weddingPos))
+        std::cout << "The bachelor has reached his wedding!" << std::endl;
+    else
+        std::cout << "Looks like the bachelor stays a bachelor for a while longer." << std::endl;
+
+    std::set<std::pair<size_t, size_t>> path2;
+
+    double pathTime2 = 0;
+    for(auto elem = m.m_solution.begin(); elem != m.m_solution.end(); ++elem)
+    {
+
+        if(std::next(elem,1) != m.m_solution.end())
+            pathTime2 += stepTime(*elem, *std::next(elem,1), elevation);
+
+        path2.insert(std::make_pair(elem->at(0), elem->at(1)));
+    }
+
+    std::cout << "pathTime2: " << pathTime2 << std::endl;
+
     visualizer::writeBMP(
         of,
         &elevation[0],
@@ -104,7 +118,7 @@ int main(int argc, char** argv)
             // Marks interesting positions on the map
             if (donut(x, y, ROVER_X, ROVER_Y) ||
                 donut(x, y, BACHELOR_X, BACHELOR_Y) ||
-                donut(x, y, WEDDING_X, WEDDING_Y) || path1.find(std::make_pair(x,y)) != path1.end())
+                donut(x, y, WEDDING_X, WEDDING_Y) || path2.find(std::make_pair(x,y)) != path2.end())
             {
                 return uint8_t(visualizer::IPV_PATH);
             }
