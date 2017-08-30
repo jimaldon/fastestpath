@@ -48,11 +48,29 @@ boost::mt19937 random_generator;
 // Distance traveled in the maze
 typedef double distance;
 
+
+
 #define GRID_RANK 2
 typedef boost::grid_graph<GRID_RANK> grid;
 typedef boost::graph_traits<grid>::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits<grid>::vertices_size_type vertices_size_type;
 
+typedef boost::graph_traits<grid>::edge_descriptor edge_descriptor;
+
+
+typedef boost::graph_traits<grid>::edges_size_type edge_size_type;
+
+// struct customVertex
+// {
+//   vertex_descriptor v;
+//   int elevation;
+// };
+
+// struct customEdge
+// {
+//   edge_descriptor e;
+//   double edge_weight;
+// };
 // A hash function for vertices.
 struct vertex_hash:std::unary_function<vertex_descriptor, std::size_t> {
   std::size_t operator()(vertex_descriptor const& u) const {
@@ -67,6 +85,7 @@ typedef boost::unordered_set<vertex_descriptor, vertex_hash> vertex_set;
 typedef boost::vertex_subset_complement_filter<grid, vertex_set>::type
         filtered_grid;
 
+//typedef boost::property_map<grid, boost::edge_weight_t>::type WeightMap;
 // A searchable maze
 //
 // The maze is grid of locations which can either be empty or contain a
@@ -88,8 +107,9 @@ public:
   friend maze random_maze(std::size_t, std::size_t);
 
   maze():m_grid(create_grid(0, 0)),m_barrier_grid(create_barrier_grid()) {};
-  maze(std::size_t x, std::size_t y):m_grid(create_grid(x, y)),
-       m_barrier_grid(create_barrier_grid()) {};
+
+  maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& elevation):m_grid(create_grid(x, y)),
+       m_barrier_grid(create_barrier_grid()),m_elev(elevation){};
 
   // The length of the maze along the specified dimension.
   vertices_size_type length(std::size_t d) const {return m_grid.length(d);}
@@ -117,8 +137,65 @@ public:
     return boost::make_vertex_subset_complement_filter(m_grid, m_barriers);
   }
 
+  double timeWeight(const vertex_descriptor& source, const vertex_descriptor& target, std::vector<uint8_t>& elevation)
+  {
+    double stepTime = 0;
+    bool diag = (abs(source[0]-target[0]) == abs(source[1]-target[1])) ? 1 : 0;
+    auto sourceElevation = static_cast<int>(elevation[source[0]+source[1]*IMAGE_DIM]);
+    auto targetElevation = static_cast<int>(elevation[target[0]+target[1]*IMAGE_DIM]);
+  
+    //check for water or flat
+    if(sourceElevation == 0 || targetElevation == 0)
+    {
+      std::cout<< "ERROR! elevation of path is 0";
+      return 0;
+    }
+    
+    //std::cout << "source elevation: " << sourceElevation << std::endl;
+    int delta = targetElevation - sourceElevation;
+  
+    if(!diag)
+    {
+      if(delta == 0)
+      {
+        stepTime += 1;
+      }
+      else if(delta > 0 )
+        {
+          stepTime +=  sqrt(1 + 0.003937*pow(delta,2)) + cwConstant*0.0627455*delta;
+        }
+      else
+      { 
+          stepTime += sqrt(1 + 0.003937*pow(delta,2)) - cwConstant*0.0627455*delta;
+      }
+      
+    }
+    else{
+      if(delta == 0)
+      {
+        stepTime += 1.414;
+      }
+      else if(delta > 0 )
+        {
+          stepTime +=  sqrt(2 + 0.003937*pow(delta,2)) + cwConstant*0.0627455*delta;
+        }
+      else
+      { 
+          stepTime += sqrt(2 + 0.003937*pow(delta,2)) - cwConstant*0.0627455*delta;
+      }
+    }
+    return stepTime;
+  }
+  // create_weightMap(const std::vector<uint8_t>& elevation){
+  //   edge_descriptor edge = boost_edge(u,v,m_barrier_grid);
+  //   add_edge(m_barrier_grid,u,v,Weight(stepTime(u ,v,elevation));
+  // }
+
   // The grid underlying the maze
   grid m_grid;
+
+  std::vector<uint8_t> m_elev;
+
   // The underlying maze grid with barrier vertices filtered out
   filtered_grid m_barrier_grid;
   // The barriers in the maze
@@ -127,6 +204,7 @@ public:
   vertex_set m_solution;
   // The length of the solution path
   distance m_solution_length;
+
 };
 
 
@@ -148,11 +226,11 @@ private:
   vertex_descriptor m_goal;
 };
 
-class jim_heuristic:
+class manhattan_heuristic:
 public boost::astar_heuristic<filtered_grid, double>
 {
 public:
-jim_heuristic(vertex_descriptor goal):m_goal(goal) {};
+manhattan_heuristic(vertex_descriptor goal):m_goal(goal) {};
 
 double operator()(vertex_descriptor v) {
 return 10*(double(abs(m_goal[0] - v[0]) + double(abs(m_goal[1] - v[1]))));
@@ -179,9 +257,13 @@ private:
   vertex_descriptor m_goal;
 };
 
+
+
 // Solve the maze using A-star search.  Return true if a solution was found.
 bool maze::solve(vertex_descriptor source, vertex_descriptor goal) {
-  boost::static_property_map<distance> weight(1);
+  //boost::static_property_map<distance> weight(1);
+  auto weight = boost::make_function_property_map<filtered_grid::edge_descriptor>([this](filtered_grid::edge_descriptor e) {
+        return timeWeight(boost::source(e, m_barrier_grid), boost::target(e, m_barrier_grid), m_elev);});
   // The predecessor map is a vertex-to-vertex mapping.
   typedef boost::unordered_map<vertex_descriptor,
                                vertex_descriptor,
@@ -195,7 +277,7 @@ bool maze::solve(vertex_descriptor source, vertex_descriptor goal) {
   dist_map distance;
   boost::associative_property_map<dist_map> dist_pmap(distance);
 
-  jim_heuristic heuristic(goal);
+  manhattan_heuristic heuristic(goal);
   astar_goal_visitor visitor(goal);
 
   std::cout << "here! before try in solve()" << std::endl;
@@ -204,7 +286,7 @@ bool maze::solve(vertex_descriptor source, vertex_descriptor goal) {
                  boost::weight_map(weight).
                  predecessor_map(pred_pmap).
                  distance_map(dist_pmap).
-                 visitor(visitor) );
+                 visitor(visitor) );  
     std::cout << "here! after try in solve()" << std::endl;
   } catch(found_goal fg) {
     // Walk backwards from the goal through the predecessor chain adding
@@ -280,8 +362,8 @@ double stepTime(const vertex_descriptor& source, const vertex_descriptor& target
   return stepTime;
 }
 // Generate a maze with a random assignment of barriers.
-maze make_maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& overrides, const std::vector<uint8_t>& elevation) {
-  maze m(IMAGE_DIM, IMAGE_DIM);
+maze make_maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& overrides, std::vector<uint8_t>& elevation) {
+  maze m(IMAGE_DIM, IMAGE_DIM, elevation);
   auto Obegin = overrides.begin();
   vertex_descriptor u;
   int count = 0;
@@ -300,7 +382,11 @@ maze make_maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& overrid
           m.m_barriers.insert(u);
       }
     }
-    std::cout << "count" << count << std::endl;
+    std::cout << "Number of non-traversable cells: " << count << std::endl;
   return m;
 }
+
+
+
+
 #endif
