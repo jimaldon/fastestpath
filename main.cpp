@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     {
         
         if(std::next(elem,1) != m.m_solution.end())
-            pathTime1 += stepTime(*elem, *std::next(elem,1), elevation);
+            pathTime1 += m.timeWeight(*elem, *std::next(elem,1), elevation);
 
         path1.insert(std::make_pair(elem->at(0), elem->at(1)));
     }
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
             // Marks interesting positions on the map
             if (donut(x, y, ROVER_X, ROVER_Y) ||
                 donut(x, y, BACHELOR_X, BACHELOR_Y) ||
-                donut(x, y, WEDDING_X, WEDDING_Y) || path2.find(std::make_pair(x,y)) != path2.end())
+                donut(x, y, WEDDING_X, WEDDING_Y) || path1.find(std::make_pair(x,y)) != path1.end()|| path2.find(std::make_pair(x,y)) != path2.end())
             {
                 return uint8_t(visualizer::IPV_PATH);
             }

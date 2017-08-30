@@ -1,7 +1,7 @@
 #ifndef UTILITY_CPP
 #define UTILITY_CPP
 
-#include "astar_search.h"
+#include <boost/graph/astar_search.hpp>
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/grid_graph.hpp>
 #include <boost/lexical_cast.hpp>
@@ -21,7 +21,7 @@
 #include <string>
 #include <cstdlib>
 
-const int cwConstant = 5;
+const int cwConstant = 5; //(mass * gravitational constant * cell length)/Power
 
 enum OverrideFlags
 {
@@ -118,8 +118,6 @@ public:
     return m_barriers.find(u) != m_barriers.end();
   }
 
- 
-
   bool solve(vertex_descriptor source, vertex_descriptor goal);
   bool solved() const {return !m_solution.empty();}
   bool solution_contains(vertex_descriptor u) const {
@@ -186,10 +184,7 @@ public:
     }
     return stepTime;
   }
-  // create_weightMap(const std::vector<uint8_t>& elevation){
-  //   edge_descriptor edge = boost_edge(u,v,m_barrier_grid);
-  //   add_edge(m_barrier_grid,u,v,Weight(stepTime(u ,v,elevation));
-  // }
+
 
   // The grid underlying the maze
   grid m_grid;
@@ -208,23 +203,7 @@ public:
 };
 
 
-// Euclidean heuristic for a grid
-//
-// This calculates the Euclidean distance between a vertex and a goal
-// vertex.
-class euclidean_heuristic:
-      public boost::astar_heuristic<filtered_grid, double>
-{
-public:
-  euclidean_heuristic(vertex_descriptor goal):m_goal(goal) {};
 
-  double operator()(vertex_descriptor v) {
-    return sqrt(pow(double(m_goal[0] - v[0]), 2) + pow(double(m_goal[1] - v[1]), 2));
-  }
-
-private:
-  vertex_descriptor m_goal;
-};
 
 class manhattan_heuristic:
 public boost::astar_heuristic<filtered_grid, double>
@@ -301,65 +280,6 @@ bool maze::solve(vertex_descriptor source, vertex_descriptor goal) {
 }
 
 
-// Return a random integer in the interval [a, b].
-std::size_t random_int(std::size_t a, std::size_t b) {
-  if (b < a)
-    b = a;
-  boost::uniform_int<> dist(a, b);
-  boost::variate_generator<boost::mt19937&, boost::uniform_int<> >
-  generate(random_generator, dist);
-  return generate();
-}
-
-double stepTime(const vertex_descriptor& source, const vertex_descriptor& target, const std::vector<uint8_t>& elevation)
-{
-  double stepTime = 0;
-  bool diag = (abs(source[0]-target[0]) == abs(source[1]-target[1])) ? 1 : 0;
-  auto sourceElevation = static_cast<int>(elevation[source[0]+source[1]*IMAGE_DIM]);
-  auto targetElevation = static_cast<int>(elevation[target[0]+target[1]*IMAGE_DIM]);
-
-  //check for water or flat
-  if(sourceElevation == 0 || targetElevation == 0)
-  {
-    std::cout<< "ERROR! elevation of path is 0";
-    return 0;
-  }
-  
-  //std::cout << "source elevation: " << sourceElevation << std::endl;
-  int delta = targetElevation - sourceElevation;
-
-  if(!diag)
-  {
-    if(delta == 0)
-    {
-      stepTime += 1;
-    }
-    else if(delta > 0 )
-      {
-        stepTime +=  sqrt(1 + 0.003937*pow(delta,2)) + cwConstant*0.0627455*delta;
-      }
-    else
-    { 
-        stepTime += sqrt(1 + 0.003937*pow(delta,2)) - cwConstant*0.0627455*delta;
-    }
-    
-  }
-  else{
-    if(delta == 0)
-    {
-      stepTime += 1.414;
-    }
-    else if(delta > 0 )
-      {
-        stepTime +=  sqrt(2 + 0.003937*pow(delta,2)) + cwConstant*0.0627455*delta;
-      }
-    else
-    { 
-        stepTime += sqrt(2 + 0.003937*pow(delta,2)) - cwConstant*0.0627455*delta;
-    }
-  }
-  return stepTime;
-}
 // Generate a maze with a random assignment of barriers.
 maze make_maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& overrides, std::vector<uint8_t>& elevation) {
   maze m(IMAGE_DIM, IMAGE_DIM, elevation);
