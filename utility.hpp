@@ -137,7 +137,7 @@ public:
     return boost::make_vertex_subset_complement_filter(m_grid, m_barriers);
   }
 
-  double timeWeight(const vertex_descriptor& source, const vertex_descriptor& target, std::vector<uint8_t>& elevation)
+  double timeWeight(const vertex_descriptor& source, const vertex_descriptor& target, const std::vector<uint8_t>& elevation)
   {
     double stepTime = 0;
     bool diag = (abs(source[0]-target[0]) == abs(source[1]-target[1])) ? 1 : 0;

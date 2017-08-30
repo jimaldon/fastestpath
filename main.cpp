@@ -79,7 +79,8 @@ int main(int argc, char** argv)
         path1.insert(std::make_pair(elem->at(0), elem->at(1)));
     }
 
-    std::cout << "pathTime1: " << pathTime1 << std::endl;
+    std::cout << "Time taken by rover to reach the bachelor is " << pathTime1 << " island seconds."<<std::endl;
+    std::cout<<std::endl;
     m.m_solution.clear();
 
 
@@ -96,12 +97,24 @@ int main(int argc, char** argv)
     {
 
         if(std::next(elem,1) != m.m_solution.end())
-            pathTime2 += stepTime(*elem, *std::next(elem,1), elevation);
+            pathTime2 += m.timeWeight(*elem, *std::next(elem,1), elevation);
 
         path2.insert(std::make_pair(elem->at(0), elem->at(1)));
     }
 
-    std::cout << "pathTime2: " << pathTime2 << std::endl;
+    std::cout << "Time taken by the rover to reach the wedding from the bachelor's position is " << pathTime2 << " island seconds."<<std::endl;
+    std::cout<<std::endl;
+
+    double totalTime = pathTime1+pathTime2;
+    std::cout << "Total time taken = " << totalTime << "island seconds. "<<std::endl;
+    int minutes = totalTime/60;
+    int hours = minutes/60;
+    std::cout << "Or in island time, the entire trip took " << int(hours%60) << " hours " << int(minutes%60) 
+    << " minutes " << int(totalTime)%60 << " seconds."<<std::endl;
+    std::cout<<std::endl;
+
+    std::cout << "You can open the map with $fed pic.bmp or $edisplay pic.bmp on Linux systems." <<std::endl;
+
 
     visualizer::writeBMP(
         of,
