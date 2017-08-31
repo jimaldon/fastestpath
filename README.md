@@ -50,13 +50,13 @@ $./Bachelor
 
 Number of non-traversable cells: 2061148
 Rover has reached the bachelor!
-Time taken by rover to reach the bachelor is 60546.7 island seconds.
+Time taken by rover to reach the bachelor is 57543.6 island seconds.
 
 The bachelor has reached his wedding!
-Time taken by the rover to reach the wedding from the bachelor's position is 11835.9 island seconds.
+Time taken by the rover to reach the wedding from the bachelor's position is 5701.29 island seconds.
 
-Total time taken = 72382.6 island seconds. 
-Or in island time, the entire trip took 20 hours 6 minutes 22 seconds.
+Total time taken = 63244.8 island seconds.
+Or in island time, the entire trip took 17 hours 34 minutes 4 seconds.
 
 You can open the map with $feh pic.bmp or $edisplay pic.bmp on Linux systems.
 
@@ -136,7 +136,7 @@ We get,
 
 Where, $cwConstant = \frac{mgc}{P}$ is a constant. Plugging in the values of $m$, $g$, $c$, and $P$
 
->$$ cwConstant = 5.031075 $$ 
+>$$ cwConstant = 5.031075 \approx 5 $$ 
 
 Similar to $t_{aup}$,
 

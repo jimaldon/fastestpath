@@ -60,18 +60,7 @@ typedef boost::graph_traits<grid>::edge_descriptor edge_descriptor;
 
 typedef boost::graph_traits<grid>::edges_size_type edge_size_type;
 
-// struct customVertex
-// {
-//   vertex_descriptor v;
-//   int elevation;
-// };
 
-// struct customEdge
-// {
-//   edge_descriptor e;
-//   double edge_weight;
-// };
-// A hash function for vertices.
 struct vertex_hash:std::unary_function<vertex_descriptor, std::size_t> {
   std::size_t operator()(vertex_descriptor const& u) const {
     std::size_t seed = 0;
@@ -96,11 +85,8 @@ typedef boost::vertex_subset_complement_filter<grid, vertex_set>::type
 // locations, the maze is unsolvable.
 //
 // The maze is implemented as a filtered grid graph where locations are
-// vertices.  Barrier vertices are filtered out of the graph.
-//
-// A-star search is used to find a path through the maze. Each edge has a
-// weight of one, so the total path length is equal to the number of edges
-// traversed.
+// vertices.  Non-traversable vertices are filtered out of the graph.
+
 class maze {
 public:
   friend std::ostream& operator<<(std::ostream&, const maze&);
@@ -212,7 +198,7 @@ public:
 manhattan_heuristic(vertex_descriptor goal):m_goal(goal) {};
 
 double operator()(vertex_descriptor v) {
-return 10*(double(abs(m_goal[0] - v[0]) + double(abs(m_goal[1] - v[1]))));
+return 1*(double(abs(m_goal[0] - v[0]) + double(abs(m_goal[1] - v[1]))));
 }
 
 private:
