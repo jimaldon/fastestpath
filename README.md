@@ -1,5 +1,20 @@
 # Fastest Path: Bachelor Problem
+<!-- TOC -->
 
+- [Scenario](#scenario)
+- [Task](#task)
+- [Assumptions](#assumptions)
+- [Implementation](#implementation)
+- [Results](#results)
+- [Build and Run](#build-and-run)
+- [Model](#model)
+    - [**World**](#world)
+    - [**Rover Speed**](#rover-speed)
+    - [**Rover Time**](#rover-time)
+        - [Adjacent (non-diagonal) Cells](#adjacent-non-diagonal-cells)
+        - [Diagonal Cells](#diagonal-cells)
+
+<!-- /TOC -->
 ## Scenario
 
 A bachelor stranded on an island `(BACHELOR_X, BACHELOR_Y)`, needs to get to his wedding location `(WEDDING_X, WEDDING_Y)` using an AUDI rover `(ROVER_X, ROVER_Y)`; both located in the same island.
@@ -88,7 +103,7 @@ According to our third assumption, the maximum angle between two traversible adj
 >$$ \alpha = \frac{1}{\sqrt{254}}$$
 
 
-### **Rover speed**
+### **Rover Speed**
 
 It's given that the speed of the rover on level ground on maximum power $P_{max}$ is $v_{flat} = 1 c/s$, or 1 cell per island second.
 
@@ -117,9 +132,9 @@ Similarly,
 
 Where $v_{down}$ is the maximum constant speed down an incline of slope $\theta$.
 
-### **Rover time**
+### **Rover Time**
 
-#### Adjacent (non-diagonal) cells
+#### Adjacent (non-diagonal) Cells
 
 Let time taken for the rover to travel up and down two adjacent cells be $t_{aup}$ and $t_{adn}$ respectively. Let distance be $d_{a}$
 
@@ -142,7 +157,7 @@ Similar to $t_{aup}$,
 
 >$$ t_{adn} = \sqrt{1 + \alpha^2 \Delta^2} - cwConstant * \alpha \Delta$$(2)
 
-#### Diagonal cells
+#### Diagonal Cells
 
 Here, the diagonal travel distance on the incline becomes
 
