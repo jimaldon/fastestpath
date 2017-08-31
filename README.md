@@ -61,6 +61,7 @@ Or in island time, the entire trip took 20 hours 6 minutes 22 seconds.
 You can open the map with $feh pic.bmp or $edisplay pic.bmp on Linux systems.
 
 ```
+![alt text](pic.bmp "Fastest Path")
 
 ## Build and Run
 ```
@@ -76,7 +77,7 @@ $ ./Bachelor
 
 ### **World**
 
-The dimension of each square cell is $side_i = c$. Let each cell have an elevation $elev_i = e_i * \alpha * c$, where $\alpha$ is a constant, and $e$ is the elevation. 
+The dimension of each square cell is $side_i = c$. Let each cell have an elevation $elev_i = e_i * \alpha * c$, where $\alpha$ is a constant, and $e$ is the elevation  . 
 
 The maximum elevation any cell can have is $elev_{max} = 255$. Since cells with $elev_i = 0$ are water and marsh lands, they cannot be traversed by the rover. So the minumum elevation for a traversible cell is $elev_{min} = 1$. It follows that the biggest elevation difference between two adjacent cells $\Delta_{max} = elev_{max} - elev_{min} = 254 \alpha c$.
 
