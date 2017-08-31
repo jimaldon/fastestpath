@@ -61,7 +61,7 @@ Or in island time, the entire trip took 17 hours 34 minutes 4 seconds.
 You can open the map with $feh pic.bmp or $edisplay pic.bmp on Linux systems.
 
 ```
-![alt text](pic.bmp "Fastest Path")
+![alt text](fastestPath.bmp "Fastest Path")
 
 ## Build and Run
 ```
