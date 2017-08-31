@@ -106,14 +106,14 @@ int main(int argc, char** argv)
     std::cout<<std::endl;
 
     double totalTime = pathTime1+pathTime2;
-    std::cout << "Total time taken = " << totalTime << "island seconds. "<<std::endl;
+    std::cout << "Total time taken = " << totalTime << " island seconds. "<<std::endl;
     int minutes = totalTime/60;
     int hours = minutes/60;
     std::cout << "Or in island time, the entire trip took " << int(hours%60) << " hours " << int(minutes%60) 
     << " minutes " << int(totalTime)%60 << " seconds."<<std::endl;
     std::cout<<std::endl;
 
-    std::cout << "You can open the map with $fed pic.bmp or $edisplay pic.bmp on Linux systems." <<std::endl;
+    std::cout << "You can open the map with $feh pic.bmp or $edisplay pic.bmp on Linux systems." <<std::endl;
 
 
     visualizer::writeBMP(

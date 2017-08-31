@@ -301,6 +301,7 @@ maze make_maze(std::size_t x, std::size_t y, const std::vector<uint8_t>& overrid
           m.m_barriers.insert(u);
       }
     }
+    std::cout<<std::endl;
     std::cout << "Number of non-traversable cells: " << count << std::endl;
   return m;
 }
