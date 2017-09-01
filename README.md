@@ -11,8 +11,6 @@
     - [**World**](#world)
     - [**Rover Speed**](#rover-speed)
     - [**Rover Time**](#rover-time)
-        - [Adjacent (non-diagonal) Cells](#adjacent-non-diagonal-cells)
-        - [Diagonal Cells](#diagonal-cells)
 
 <!-- /TOC -->
 ## Scenario
@@ -98,9 +96,13 @@ The maximum elevation any cell can have is $elev_{max} = 255$. Since cells with 
 
 According to our third assumption, the maximum angle between two traversible adjacent cells is $45 \degree$. 
 
->$$ \sin(45) = \frac{\Delta_{max}}{\sqrt{c^2 + \Delta_{max}^{2}}}$$
 
->$$ \alpha = \frac{1}{\sqrt{254}}$$
+![alt text](assets/equation_gifs/1.gif)
+
+![alt text](assets/equation_gifs/2.gif)
+
+
+
 
 
 ### **Rover Speed**
@@ -109,26 +111,38 @@ It's given that the speed of the rover on level ground on maximum power $P_{max}
 
 Since the max speed of the Audi Q5 is assumed to be `55.5 m/s` (Assumption #4) and one island second is assumed to be one real second (assumption #1), it follows,
 
->$$ v_{flat} = 55.5 m/s = 1 c/s$$
+![alt text](assets/equation_gifs/3.gif)
 
->$$ c = 55.5 m $$
+![alt text](assets/equation_gifs/4.gif)
+
+
 
 The power $P$ of its engine is used to overcome the power dissipated by the resistive force, $f$.
 
->$$ P = f * v_{flat} $$
->$$ f = \frac{P}{c} $$
+![alt text](assets/equation_gifs/5.gif)
+
+![alt text](assets/equation_gifs/6.gif)
+
 
 When the car, whose weight is $mg$ ($m$ = mass, $g$ = gravitational constant), is traveling up an incline, whose angle with respect to the horizontal is $\theta$, it is subject to the additional force  $f_{up}= mg \sin\theta$, which acts to impede its motion. Of course, this force is just the component of the car's weight acting down the incline. Thus, the new power balance equation is
 
->$$ P = f * v_{up} + mg \sin\theta * v_{up}$$
+![alt text](assets/equation_gifs/7.gif)
+
+
 
 Here $v_{up}$ is the maximum velocity of the rover up the incline. It's assumed that this is constant throughout the journey up the incline of slope $\theta$.
 
->$$ v_{up} = \frac{Pc}{P + mgc \sin\theta} $$
+![alt text](assets/equation_gifs/8.gif)
+
+
+
+
 
 Similarly,
 
->$$ v_{down} = \frac{Pc}{P - mgc \sin\theta} $$
+![alt text](assets/equation_gifs/9.gif)
+
+
 
 Where $v_{down}$ is the maximum constant speed down an incline of slope $\theta$.
 
@@ -138,36 +152,47 @@ Where $v_{down}$ is the maximum constant speed down an incline of slope $\theta$
 
 Let time taken for the rover to travel up and down two adjacent cells be $t_{aup}$ and $t_{adn}$ respectively. Let distance be $d_{a}$
 
->$$ t_{aup} = \frac{d_a}{v_{up}} $$
->$$ t_{aup} = \frac{(\sqrt{c^2 + \alpha^2 \Delta^2 c^2})* (P + mgc \sin\theta)}{Pc}$$
+![alt text](assets/equation_gifs/10.gif)
+
+![alt text](assets/equation_gifs/11.gif)
+
+
 
 Since, 
 
->$$ \sin\theta  = \frac{\alpha \Delta}{\sqrt{1 + \alpha^2 \Delta^2}}$$
+![alt text](assets/equation_gifs/12.gif)
+
 
 We get,
 
->$$ t_{aup} = \sqrt{1 + \alpha^2 \Delta^2} + cwConstant * \alpha \Delta $$(1)
+![alt text](assets/equation_gifs/13.gif)
+
 
 Where, $cwConstant = \frac{mgc}{P}$ is a constant. Plugging in the values of $m$, $g$, $c$, and $P$
 
->$$ cwConstant = 5.031075 \approx 5 $$ 
+![alt text](assets/equation_gifs/14.gif)
+
 
 Similar to $t_{aup}$,
 
->$$ t_{adn} = \sqrt{1 + \alpha^2 \Delta^2} - cwConstant * \alpha \Delta$$(2)
+![alt text](assets/equation_gifs/15.gif)
+
+
 
 #### Diagonal Cells
 
 Here, the diagonal travel distance on the incline becomes
 
->$$ d_d = \sqrt{2c^2 + \alpha^2 \Delta^2 c^2} $$
+![alt text](assets/equation_gifs/16.gif)
+
 
 So, the time taken to travel up ($t_{dup}$) and down ($t_{ddn}$) on an incline between two diagonal cells is:
 
->$$ t_{dup} = \sqrt{2 + \alpha^2 \Delta^2} + cwConstant * \alpha \Delta$$(3)
+![alt text](assets/equation_gifs/17.gif)
+
 
 and,
 
->$$ t_{ddn} = \sqrt{2 + \alpha^2 \Delta^2} - cwConstant * \alpha \Delta$$(4)
+![alt text](assets/equation_gifs/18.gif)
+
 
