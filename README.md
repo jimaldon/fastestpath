@@ -52,7 +52,7 @@ Given that the code is required to be production grade, I decided to employ the 
 
 The cells of the island map are modelled as nodes of a grid graph. I've removed the subset of nodes  from the grid which correspond to non-traversible cells of the map such as water and marsh lands.
 
-A maze (grid class) member function `m_timeWeight(vertex A, vertex B, elevation)` takes in two vertices and the elevation amp, and uses equations (1), (2), (3), (4) to determine the time taken by the rover to travel from `A` to `B`. The output of the function is modelled as the weight of the edge between the two vertices `A` and `B`.
+A maze (grid class) member function `m_timeWeight(vertex A, vertex B, elevation)` takes in two vertices and the elevation amp, and uses equations for `t_aup t_adn t_dup tddn` (derived in #rover-time), to determine the time taken by the rover to travel from `A` to `B`. The output of the function is modelled as the weight of the edge between the two vertices `A` and `B`.
 
 I use A-Star search with the a manhattan distance heuristic function to find the path where the rover takes the least time to get from `[ROVER_X, ROVER_Y]` to `[BACHELOR_X, BACHELOR_Y]` and then to `[WEDDING_X, WEDDING_Y]`.
 
