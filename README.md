@@ -1,18 +1,32 @@
 # Fastest Path: Bachelor Problem
+
+This is a C++ project based on the Boost Graph Library (BGL) which solves a path planning and optimization problem. The problem presents a situation where an agent needs to traverse an elevation map in the least time possible with constraints including different obstacle types and variable speed over elevation gradients. This project proposes and develops an agent motion model with realistic constants, and uses it for path optimization.
+
+
 <!-- TOC -->
 
+- [Build and Run](#build-and-run)
 - [Scenario](#scenario)
 - [Task](#task)
 - [Assumptions](#assumptions)
 - [Implementation](#implementation)
 - [Results](#results)
-- [Build and Run](#build-and-run)
 - [Model](#model)
     - [**World**](#world)
     - [**Rover Speed**](#rover-speed)
     - [**Rover Time**](#rover-time)
 
 <!-- /TOC -->
+## Build and Run
+```
+$ git clone https://github.com/jimdsouza/fastestpath.git
+$ cd fastestpath
+$ mkdir build && cd build
+$ cmake ..
+$ make
+$ ./Bachelor
+```
+
 ## Scenario
 
 A bachelor stranded on an island `(BACHELOR_X, BACHELOR_Y)`, needs to get to his wedding location `(WEDDING_X, WEDDING_Y)` using an AUDI rover `(ROVER_X, ROVER_Y)`; both located in the same island.
@@ -76,15 +90,6 @@ You can open the map with $feh pic.bmp or $edisplay pic.bmp on Linux systems.
 ```
 ![alt text](fastestPath.bmp "Fastest Path")
 
-## Build and Run
-```
-$ git clone https://github.com/jimdsouza/fastestpath.git
-$ cd fastestpath
-$ mkdir build && cd build
-$ cmake ..
-$ make
-$ ./Bachelor
-```
 
 ## Model
 
